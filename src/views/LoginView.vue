@@ -6,6 +6,7 @@
 
     <div
       class="text-red text-center w-max m-auto text-sm opacity-0"
+      id="login-error"
       :class="{ 'opacity-100': loginError }"
     >
       {{ loginError }}&nbsp;
@@ -17,6 +18,7 @@
         placeholder="Email"
         icon="email-icon"
         autocomplete="current-email"
+        type="email"
         :error="errors.email"
         @blur="validate('email', email)"
         @input="onInput('email', email)"

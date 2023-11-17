@@ -46,7 +46,7 @@ const props = defineProps<{
     | "credit-card-icon"
     | "calendar-icon";
   error?: string;
-  type?: "text" | "password";
+  type?: "text" | "password" | "email" | "number" | "date" | "time";
   autocomplete?: string;
 }>();
 
