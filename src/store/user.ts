@@ -1,6 +1,7 @@
 import { UserState } from "@/types/user";
 import fakeAxios from "@/plugins/fakeAxios";
 import { ActionContext } from "vuex";
+import router from "@/router";
 
 const initializeUser = () => {
   const user = localStorage.getItem("user");
@@ -47,16 +48,19 @@ export const user = {
           fakeAxios
             .post("/user", { token })
             .then((response) => {
-              commit("SET_USER", response.data);
+              const data = { ...response.data, token: token };
+              commit("SET_USER", data);
               resolve(response);
             })
             .catch((error) => {
               commit("CLEAR_USER");
               reject(error);
+              router.push("/login");
             });
         } else {
           commit("CLEAR_USER");
           reject("No token found");
+          router.push("/login");
         }
       });
     },
@@ -87,13 +91,36 @@ export const user = {
             .then((response) => {
               commit("CLEAR_USER");
               resolve(response);
+              router.push("/login");
             })
             .catch((error) => {
               reject(error);
             });
         } else {
-          commit("SET_ERROR", "No token found");
+          commit("CLEAR_USER");
           reject("No token found");
+          router.push("/login");
+        }
+      });
+    },
+    payDeposit(context: ActionContext<UserState, unknown>) {
+      return new Promise((resolve, reject) => {
+        const { commit, state } = context;
+        const token = state.user.token;
+
+        if (token) {
+          fakeAxios
+            .post("/deposit", { token })
+            .then((response) => {
+              resolve(response);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        } else {
+          commit("CLEAR_USER");
+          reject("No token found");
+          router.push("/login");
         }
       });
     },

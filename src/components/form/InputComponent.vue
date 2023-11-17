@@ -32,11 +32,19 @@
 import { defineProps, defineEmits, computed } from "vue";
 import EmailIcon from "@/components/icons/EmailIcon.vue";
 import KeyIcon from "@/components/icons/KeyIcon.vue";
+import HideIcon from "@/components/icons/HideIcon.vue";
+import CreditCardIcon from "@/components/icons/CreditCardIcon.vue";
+import CalendarIcon from "@/components/icons/CalendarIcon.vue";
 
 const props = defineProps<{
   modelValue: string;
   placeholder: string;
-  icon: "email-icon" | "key-icon";
+  icon:
+    | "email-icon"
+    | "key-icon"
+    | "hide-icon"
+    | "credit-card-icon"
+    | "calendar-icon";
   error?: string;
   type?: "text" | "password";
   autocomplete?: string;
@@ -63,6 +71,9 @@ const iconComponent = computed(() => {
   const iconsMap = {
     "email-icon": EmailIcon,
     "key-icon": KeyIcon,
+    "hide-icon": HideIcon,
+    "credit-card-icon": CreditCardIcon,
+    "calendar-icon": CalendarIcon,
   };
   return iconsMap[props.icon];
 });

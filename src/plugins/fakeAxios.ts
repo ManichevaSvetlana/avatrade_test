@@ -44,6 +44,15 @@ const fakeAxios = {
           } else {
             reject("Invalid token");
           }
+        } else if (url === "/deposit") {
+          if (data.token === "1234567890") {
+            const response: ApiResponse = {
+              message: "Deposit paid successfully",
+            };
+            resolve(response);
+          } else {
+            reject("Invalid token");
+          }
         }
       }, 1000);
     });
