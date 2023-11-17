@@ -1,60 +1,101 @@
-import { createStore } from "vuex";
 import { UserState } from "@/types/user";
 import fakeAxios from "@/plugins/fakeAxios";
+import { ActionContext } from "vuex";
 
-export const user = createStore<UserState>({
-  state: {
-    isLoggedIn: false,
-    user: {
-      name: null,
-      email: null,
-      token: null,
-    },
-    error: null,
-  },
+const initializeUser = () => {
+  const user = localStorage.getItem("user");
+  if (user) {
+    return JSON.parse(user);
+  } else {
+    return { name: null, email: null, token: null };
+  }
+};
+
+export const user = {
+  state: (): UserState => ({
+    isLoggedIn: localStorage.getItem("user") !== null,
+    user: initializeUser(),
+  }),
   mutations: {
-    SET_USER(state, userData: { email: string; name: string; token: string }) {
+    SET_USER(
+      state: UserState,
+      userData: { email: string; name: string; token: string }
+    ) {
       state.isLoggedIn = true;
       state.user = userData;
+
+      localStorage.setItem("user", JSON.stringify(userData));
     },
-    CLEAR_USER(state) {
+    CLEAR_USER(state: UserState) {
       state.isLoggedIn = false;
       state.user = {
         name: null,
         email: null,
         token: null,
       };
-    },
-    SET_ERROR(state, errorMessage: string) {
-      state.error = errorMessage;
+
+      localStorage.removeItem("user");
     },
   },
   actions: {
-    login({ commit }, credentials: { email: string; password: string }) {
-      fakeAxios
-        .post("/login", credentials)
-        .then((response) => {
-          commit("SET_USER", response.data);
-        })
-        .catch((error) => {
-          commit("SET_ERROR", error);
-        });
-    },
-    logout({ state, commit }) {
-      const token = state.user.token;
+    getUser(context: ActionContext<UserState, unknown>) {
+      return new Promise((resolve, reject) => {
+        const { commit, state } = context;
+        const token = state.user.token;
 
-      if (token) {
+        if (token) {
+          fakeAxios
+            .post("/user", { token })
+            .then((response) => {
+              commit("SET_USER", response.data);
+              resolve(response);
+            })
+            .catch((error) => {
+              commit("CLEAR_USER");
+              reject(error);
+            });
+        } else {
+          commit("CLEAR_USER");
+          reject("No token found");
+        }
+      });
+    },
+    login(
+      context: ActionContext<UserState, unknown>,
+      credentials: { email: string; password: string }
+    ) {
+      return new Promise((resolve, reject) => {
         fakeAxios
-          .post("/logout", { token })
-          .then(() => {
-            commit("CLEAR_USER");
+          .post("/login", credentials)
+          .then((response) => {
+            context.commit("SET_USER", response.data);
+            resolve(response);
           })
           .catch((error) => {
-            commit("SET_ERROR", error);
+            reject(error);
           });
-      } else {
-        commit("SET_ERROR", "No token found");
-      }
+      });
+    },
+    logout(context: ActionContext<UserState, unknown>) {
+      return new Promise((resolve, reject) => {
+        const { commit, state } = context;
+        const token = state.user.token;
+
+        if (token) {
+          fakeAxios
+            .post("/logout", { token })
+            .then((response) => {
+              commit("CLEAR_USER");
+              resolve(response);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        } else {
+          commit("SET_ERROR", "No token found");
+          reject("No token found");
+        }
+      });
     },
   },
-});
+};

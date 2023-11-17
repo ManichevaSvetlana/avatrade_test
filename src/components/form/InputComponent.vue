@@ -6,13 +6,25 @@
       :type="props.type || 'text'"
       @input="handleInput"
       @change="handleChange"
+      @blur="handleBlur"
       class="text-black font-normal rounded-sm border pl-13 pr-3 py-4 text-base"
+      :class="{ 'border-red': error }"
+      :autocomplete="props.autocomplete"
     />
-    <span v-if="iconComponent" class="absolute left-3 top-4 text-blue">
+    <span
+      v-if="iconComponent"
+      class="absolute left-3 top-4 text-blue"
+      :class="{ 'text-red': error }"
+    >
       <component :is="iconComponent" />
     </span>
     <slot name="icon-right"></slot>
-    <small v-if="error" class="error-text">{{ props.error }}</small>
+    <small
+      class="text-sm text-red text-left mt-1 opacity-0"
+      :class="{ 'opacity-100': error }"
+    >
+      {{ props.error }}&nbsp;
+    </small>
   </div>
 </template>
 
@@ -27,9 +39,10 @@ const props = defineProps<{
   icon: "email-icon" | "key-icon";
   error?: string;
   type?: "text" | "password";
+  autocomplete?: string;
 }>();
 
-const emits = defineEmits(["update:modelValue", "input", "change"]);
+const emits = defineEmits(["update:modelValue", "input", "change", "blur"]);
 
 const handleInput = (event: Event) => {
   const value = (event.target as HTMLInputElement).value;
@@ -42,6 +55,10 @@ const handleChange = (event: Event) => {
   emits("change", value);
 };
 
+const handleBlur = (event: Event) => {
+  emits("blur", event);
+};
+
 const iconComponent = computed(() => {
   const iconsMap = {
     "email-icon": EmailIcon,
@@ -50,11 +67,3 @@ const iconComponent = computed(() => {
   return iconsMap[props.icon];
 });
 </script>
-
-<style scoped>
-.error-text {
-  color: red;
-  font-size: 14px;
-  margin-top: 5px;
-}
-</style>

@@ -19,7 +19,9 @@ const iconComponent = computed(() => {
 </script>
 
 <template>
-  <div class="icon-container rounded-full bg-white shadow pointer">
+  <div
+    class="icon-container rounded-full bg-white shadow pointer hover:shadow-xl"
+  >
     <component :is="iconComponent" class="icon" />
   </div>
 </template>

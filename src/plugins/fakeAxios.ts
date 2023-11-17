@@ -1,7 +1,7 @@
 interface ApiResponse {
   data?: {
     user: { email: string; name: string };
-    token: string;
+    token?: string;
   };
   message?: string;
 }
@@ -33,6 +33,17 @@ const fakeAxios = {
                 : "Invalid token",
           };
           resolve(response);
+        } else if (url === "/user") {
+          if (data.token === "1234567890") {
+            const response: ApiResponse = {
+              data: {
+                user: { email: "test@test.com", name: "Test User" },
+              },
+            };
+            resolve(response);
+          } else {
+            reject("Invalid token");
+          }
         }
       }, 1000);
     });

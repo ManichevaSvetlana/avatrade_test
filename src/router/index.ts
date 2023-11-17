@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { checkMiddleware } from "@/router/middleware";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,13 +11,22 @@ const routes: Array<RouteRecordRaw> = [
     name: "login",
     component: () =>
       import("../views/LoginView.vue" /* webpackChunkName: "login" */),
+    meta: { requiresGuest: true },
   },
-  // TODO: deposit
+  {
+    path: "/deposit",
+    name: "deposit",
+    component: () =>
+      import("../views/DepositView.vue" /* webpackChunkName: "deposit" */),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
 });
+
+router.beforeEach(checkMiddleware);
 
 export default router;

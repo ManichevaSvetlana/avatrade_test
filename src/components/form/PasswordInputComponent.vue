@@ -4,9 +4,11 @@
     :placeholder="props.placeholder"
     @input="handleInput"
     @change="handleChange"
+    @blur="handleBlur"
     :icon="props.icon"
     :error="props.error"
     v-model="val"
+    autocomplete="current-password"
   >
     <template #icon-right>
       <span
@@ -33,7 +35,7 @@ const props = defineProps<{
   error?: string;
 }>();
 
-const emits = defineEmits(["update:modelValue", "input", "change"]);
+const emits = defineEmits(["update:modelValue", "input", "change", "blur"]);
 const isPasswordVisible = ref(false);
 const val = ref(props.modelValue);
 
@@ -44,6 +46,10 @@ const handleInput = () => {
 
 const handleChange = () => {
   emits("change", val.value);
+};
+
+const handleBlur = (event: Event) => {
+  emits("blur", event);
 };
 
 const togglePasswordVisibility = () => {
