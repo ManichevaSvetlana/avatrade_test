@@ -48,6 +48,7 @@ npm run build
 
 ### Login View
 - Username and Password fields.
+- Correct credentials: email: `test@test.com`, password: `password`.
 - Fake API authentication call.
 - Redirects to Deposit view upon successful login. 
 
