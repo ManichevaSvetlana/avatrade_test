@@ -11,6 +11,7 @@
       >
         <div
           class="absolute pointer top-4 right-3 text-gray hover:text-gray-500"
+          id="logout-button"
           @click="logout"
           v-if="store.state.user.user.token"
         >
